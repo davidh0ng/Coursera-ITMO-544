@@ -32,29 +32,37 @@ echo "Finding and storing the subnet IDs for defined in arguments.txt Availabili
 SUBNET2A=$(aws ec2 describe-subnets --output=text --query='Subnets[*].SubnetId' --filter "Name=availability-zone,Values=${10}")
 SUBNET2B=$(aws ec2 describe-subnets --output=text --query='Subnets[*].SubnetId' --filter "Name=availability-zone,Values=${11}")
 echo $SUBNET2A
-echo $SUBNET2B
+echo $SUBNET2B 
 
 echo 'Creating the TARGET GROUP and storing the ARN in $TARGETARN...'
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-target-group.html
-TARGETARN=
+TARGETARN=arn:aws:elasticloadbalancing:us-west-1:814193706784:targetgroup/djh-tg/a7ea02c6331ad118
 
 echo "Creating ELBv2 Elastic Load Balancer..."
 #https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-load-balancer.html
-ELBARN=
+ELBARN=arn:aws:elasticloadbalancing:us-west-1:814193706784:loadbalancer/app/djh-elb/8059012957b3a29b
 echo $ELBARN
 
 # AWS elbv2 wait for load-balancer available
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/elbv2/wait/load-balancer-available.html
 echo "Waiting for load balancer to be available..."
-aws elbv2 wait load-balancer-available 
+aws elbv2 wait load-balancer-available --load-balancer-arns $ELBARN
 echo "Load balancer available..."
 # create AWS elbv2 listener for HTTP on port 80
 #https://awscli.amazonaws.com/v2/documentation/api/latest/reference/elbv2/create-listener.html
-aws elbv2 create-listener 
+aws elbv2 create-listener --load-balancer-arn $ELBARN --protocol HTTP --port 80 --default-actions Type=forward,TargetGroupArn=$TARGETARN
 
 echo "Beginning to create and launch instances..."
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ec2/run-instances.html
-aws ec2 run-instances 
+aws ec2 run-instances \
+  --image-id $1 \
+  --instance-type $2 \
+  --key-name $3 \
+  --security-group-ids $4 \
+  --count $5 \
+  --user-data file://$6 \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=module,Value=$7}]" \
+  --subnet-id $SUBNET2A 
 
 # Collect Instance IDs
 # https://stackoverflow.com/questions/31744316/aws-cli-filter-or-logic
@@ -74,7 +82,9 @@ if [ "$INSTANCEIDS" != "" ]
     INSTANCEIDSARRAY=($INSTANCEIDS)
     for INSTANCEID in ${INSTANCEIDSARRAY[@]};
       do
-      aws elbv2 register-targets 
+      aws elbv2 register-targets \
+        --target-group-arn $TARGETARN \
+        --targets Id=$INSTANCEID
       done
   else
     echo "There are no running or pending instances in $INSTANCEIDS to wait for..."
@@ -82,7 +92,7 @@ fi
 
 # Retreive ELBv2 URL via aws elbv2 describe-load-balancers --query and print it to the screen
 #https://awscli.amazonaws.com/v2/documentation/api/latest/reference/elbv2/describe-load-balancers.html
-URL=$(aws elbv2 describe-load-balancers 
+URL=$(aws elbv2 describe-load-balancers --filter "Name=load-balancer-arn,Values=$ELBARN" --query 'LoadBalancers[*].DNSName' --output=text)
 echo $URL
 
 # end of outer fi - based on arguments.txt content
