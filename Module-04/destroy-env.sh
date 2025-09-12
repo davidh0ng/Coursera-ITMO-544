@@ -34,11 +34,11 @@ if [ "$ASGNAMES" != "" ]
 
       aws autoscaling update-auto-scaling-group \
         --auto-scaling-group-name $ASGNAME \
-        --min-size 0
+        --min-size 0 \
 
       aws autoscaling update-auto-scaling-group \
       --auto-scaling-group-name $ASGNAME \
-      --desired-capacity 0
+      --desired-capacity 0 \
   
      if [ "$INSTANCEIDS" != "" ]
        then

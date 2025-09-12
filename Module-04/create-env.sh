@@ -66,27 +66,12 @@ LAUNCHTEMPLATEID=$(aws ec2 describe-launch-templates --launch-template-names ${1
 
 echo 'Creating the TARGET GROUP and storing the ARN in $TARGETARN'
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-target-group.html
-TARGETARN=$(aws elbv2 create-target-group \
-  --name ${8} \
-  --protocol HTTP \
-  --port 80 \
-  --vpc-id $VPCID \
-  --target-type instance \
-  --security-groups ${4} \
-  --tags Key=module,Value=${7} \
-  --query "TargetGroups[*].TargetGroupArn" \
-  --output=text)
+TARGETARN=$(aws elbv2 create-target-group --name ${8} --protocol HTTP --port 80 --vpc-id $VPCID --target-type instance --security-groups ${4} --tags Key=module,Value=${7} --query "TargetGroups[*].TargetGroupArn" --output=text)
 echo $TARGETARN
 
 echo "Creating ELBv2 Elastic Load Balancer..."
 #https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-load-balancer.html
-ELBARN=$(aws elbv2 create-load-balancer \
-  --name ${9} \
-  --subnets $SUBNET2A $SUBNET2B \
-  --tags Key=module,Value=${7} \
-  --security-groups ${4} \
-  --query "LoadBalancers[*].LoadBalancerArn" \
-  --output=text)
+ELBARN=$(aws elbv2 create-load-balancer --name ${9} --subnets $SUBNET2A $SUBNET2B --tags Key=module,Value=${7} --security-groups ${4} --query "LoadBalancers[*].LoadBalancerArn" --output=text)
 echo $ELBARN
 
 # Decrease the deregistration timeout (deregisters faster than the default 300 second timeout per instance)
