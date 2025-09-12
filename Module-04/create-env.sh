@@ -59,20 +59,19 @@ echo $SUBNET2B
 echo "Creating the AutoScalingGroup Launch Template..."
 aws ec2 create-launch-template \
   --launch-template-name ${12} \
-  --version-description "Version1" \
   --launch-template-data file://$ltconfigfile \
   --region ${17}
 # Retreive the Launch Template ID using a --query
-LAUNCHTEMPLATEID=lt-0c05aebbac1b66be7
+LAUNCHTEMPLATEID=$(aws ec2 describe-launch-templates --launch-template-names ${12} --query "LaunchTemplates[*].LaunchTemplateId" --output=text)
 
 echo 'Creating the TARGET GROUP and storing the ARN in $TARGETARN'
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-target-group.html
-TARGETARN=arn:aws:elasticloadbalancing:us-west-1:814193706784:targetgroup/djh-tg/5f49c2a1b18ccbe3
+TARGETARN=(create-target-group --name ${8} --protocol HTTP --port 80 --vpc-id $VPCID --target-type instance --tags Key=module,Value=${7} --query "TargetGroups[*].TargetGroupArn" --output=text)
 echo $TARGETARN
 
 echo "Creating ELBv2 Elastic Load Balancer..."
 #https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-load-balancer.html
-ELBARN=arn:aws:elasticloadbalancing:us-west-1:814193706784:loadbalancer/app/djh-lb/93e2b9ea3f1c3c09
+ELBARN=(aws elbv2 create-load-balancer --name ${9} --subnets $SUBNET2A $SUBNET2B --security-groups ${4} --tags Key=module,Value=${7} --query "LoadBalancers[*].LoadBalancerArn" --output=text)
 echo $ELBARN
 
 # Decrease the deregistration timeout (deregisters faster than the default 300 second timeout per instance)
@@ -100,7 +99,7 @@ aws autoscaling create-auto-scaling-group \
   --desired-capacity ${16} \
   --vpc-zone-identifier "$SUBNET2A,$SUBNET2B" \
   --target-group-arns $TARGETARN \
-  --tags Key=module,Value=${7} Key=elb,Value=${9} Key=owner,Value=djh Key=environment,Value=dev
+  --tags Key=module,Value=${7}
 
 echo 'Waiting for Auto Scaling Group to spin up EC2 instances and attach them to the TargetARN...'
 # Create waiter for registering targets
