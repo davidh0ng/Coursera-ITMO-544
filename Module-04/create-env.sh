@@ -107,7 +107,8 @@ aws autoscaling create-auto-scaling-group \
   --desired-capacity ${16} \
   --vpc-zone-identifier "$SUBNET2A,$SUBNET2B" \
   --target-group-arns $TARGETARN \
-  --tags Key=module,Value=${7}
+  --tags Key=module,Value=${7} \
+  --region ${17}
 
 echo 'Waiting for Auto Scaling Group to spin up EC2 instances and attach them to the TargetARN...'
 # Create waiter for registering targets
