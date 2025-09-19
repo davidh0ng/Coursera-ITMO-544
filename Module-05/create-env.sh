@@ -60,7 +60,11 @@ echo $SUBNET2A
 echo $SUBNET2B
 
 echo "Creating the AutoScalingGroup Launch Template..."
-aws ec2 create-launch-template --launch-template-name ${12} --version-description AutoScalingVersion1 --launch-template-data file://config.json --region ${17}
+aws ec2 create-launch-template \
+  --launch-template-name ${12} \
+  --version-description AutoScalingVersion1 \
+  --launch-template-data file://config.json \
+  --region ${17}
 echo "Launch Template created..."
 
 # Launch Template Id
@@ -68,12 +72,30 @@ LAUNCHTEMPLATEID=$(aws ec2 describe-launch-templates --launch-template-names ${1
 
 echo "Creating the TARGET GROUP and storing the ARN in \$TARGETARN"
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-target-group.html
-TARGETARN=$(aws elbv2 create-target-group --name ${8} --protocol HTTP --port 80 --vpc-id $VPCID --health-check-protocol HTTP --health-check-port 80 --health-check-path /index.html --matcher HttpCode=200 --target-type instance --output=text --query 'TargetGroups[0].TargetGroupArn')
+TARGETARN=$(aws elbv2 create-target-group \
+  --name ${8} \
+  --protocol HTTP \
+  --port 80 \
+  --vpc-id $VPCID \
+  --health-check-protocol HTTP \
+  --health-check-port 80 \
+  --health-check-path /index.html \
+  --matcher HttpCode=200 \
+  --target-type instance \
+  --output=text \
+  --query 'TargetGroups[0].TargetGroupArn')
 echo $TARGETARN
 
 echo "Creating ELBv2 Elastic Load Balancer..."
 #https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-load-balancer.html
-ELBARN=$(aws elbv2 create-load-balancer --name ${9} --subnets $SUBNET2A $SUBNET2B --security-groups ${4} --scheme internet-facing --type application --output=text --query 'LoadBalancers[0].LoadBalancerArn' )
+ELBARN=$(aws elbv2 create-load-balancer \
+  --name ${9} \
+  --subnets $SUBNET2A $SUBNET2B \
+  --security-groups ${4} \
+  --scheme internet-facing \
+  --type application \
+  --output=text \
+  --query 'LoadBalancers[0].LoadBalancerArn' )
 echo $ELBARN
 
 # AWS elbv2 wait for load-balancer available
@@ -89,7 +111,15 @@ echo 'Creating Auto Scaling Group...'
 # Create Autoscaling group ASG - needs to come after Target Group is created
 # Create autoscaling group
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/autoscaling/create-auto-scaling-group.html
-aws autoscaling create-auto-scaling-group 
+aws autoscaling create-auto-scaling-group \
+  --auto-scaling-group-name ${13} \
+  --launch-template "LaunchTemplateID=${LAUNCHTEMPLATEID},Version=1" \
+  --min-size ${14} \
+  --max-size ${15} \
+  --desired-capacity ${16} \
+  --target-group-arns $TARGETARN \
+  --vpc-zone-identifier "$SUBNET2A,$SUBNET2B" \
+  --tags ResourceId=${13},ResourceType=auto-scaling-group,Key=Name,Value=${7},PropagateAtLaunch=true
 
 echo 'Waiting for Auto Scaling Group to spin up EC2 instances and attach them to the TargetARN...'
 # Create waiter for registering targets
