@@ -33,6 +33,9 @@
 
 ltconfigfile="./config.json"
 
+pwd
+ls ./Module-05/Files/
+
 if [ $# = 0 ]
 then
   echo "You don't have enough variables in your arugments.txt, perhaps you forgot to run: bash ./create-env.sh \$(< ~/arguments.txt)"
@@ -161,11 +164,11 @@ echo "Created S3 bucket: ${20}..."
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/index.html
 # Upload illinoistech.png and rohit.jpg to bucket ${19}
 echo "Uploading image: ./images/illinoistech.png to s3://${19}..."
-aws s3 cp ./Module-05/Files/illinoistech.png s3://${19}/
+aws s3 cp ./Files/illinoistech.png s3://${19}/
 echo "Uploaded image: ./images/illinoistech.png to s3://${19}..."
 
 echo "Uploading image: ./images/rohit.jpg to s3://${19}..."
-aws s3 cp ./Module-05/Files/rohit.jpg s3://${19}/
+aws s3 cp ./Files/rohit.jpg s3://${19}/
 echo "Uploaded image: ./images/rohit.jpg to s3://${19}..."
 
 echo "Listing content of bucket: s3://${19}..."
@@ -173,11 +176,11 @@ aws s3 ls s3://${19}/
 
 # Upload ranking.jpg and elevate.webp to bucket ${20}
 echo "Uploading image: ./images/elevate.webp to s3://${20}..."
-aws s3 cp ./Module-05/Files/elevate.webp s3://${20}/
+aws s3 cp ./Files/elevate.webp s3://${20}/
 echo "Uploaded image: ./images/elevate.webp to s3://${20}..."
 
 echo "Uploading image: ./images/ranking.jpg to s3://${20}..."
-aws s3 cp ./Module-05/Files/ranking.jpg s3://${20}/
+aws s3 cp ./Files/ranking.jpg s3://${20}/
 echo "Uploaded image: ./images/ranking.jpg to s3://${20}..."
 
 echo "Listing content of bucket: s3://${20}..."
