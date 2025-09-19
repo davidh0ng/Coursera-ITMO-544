@@ -68,7 +68,10 @@ aws ec2 create-launch-template \
 echo "Launch Template created..."
 
 # Launch Template Id
-LAUNCHTEMPLATEID=$(aws ec2 describe-launch-templates --launch-template-names ${12} --query 'LaunchTemplates[0].LaunchTemplateId' --output=text)
+LAUNCHTEMPLATEID=$(aws ec2 describe-launch-templates \
+  --launch-template-names ${12} \
+  --query 'LaunchTemplates[0].LaunchTemplateId' \
+  --output=text)
 
 echo "Creating the TARGET GROUP and storing the ARN in \$TARGETARN"
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-target-group.html
@@ -103,7 +106,11 @@ aws elbv2 wait load-balancer-available --load-balancer-arns $ELBARN
 echo "Load balancer available..."
 # create AWS elbv2 listener for HTTP on port 80
 #https://awscli.amazonaws.com/v2/documentation/api/latest/reference/elbv2/create-listener.html
-aws elbv2 create-listener --load-balancer-arn $ELBARN --protocol HTTP --port 80 --default-actions Type=forward,TargetGroupArn=$TARGETARN
+aws elbv2 create-listener \
+  --load-balancer-arn $ELBARN \
+  --protocol HTTP \
+  --port 80 \
+  --default-actions Type=forward,TargetGroupArn=$TARGETARN
 
 echo 'Creating Auto Scaling Group...'
 # Create Autoscaling group ASG - needs to come after Target Group is created
@@ -127,7 +134,10 @@ echo "Targets attached to Auto Scaling Group..."
 
 # Collect Instance IDs
 # https://stackoverflow.com/questions/31744316/aws-cli-filter-or-logic
-INSTANCEIDS=$(aws ec2 describe-instances --output=text --query 'Reservations[*].Instances[*].InstanceId' --filter "Name=instance-state-name,Values=running,pending")
+INSTANCEIDS=$(aws ec2 describe-instances \
+  --output=text \
+  --query 'Reservations[*].Instances[*].InstanceId' \
+  --filter "Name=instance-state-name,Values=running,pending")
 
 if [ "$INSTANCEIDS" != "" ]
   then
@@ -151,11 +161,11 @@ echo "Created S3 bucket: ${20}..."
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/index.html
 # Upload illinoistech.png and rohit.jpg to bucket ${19}
 echo "Uploading image: ./images/illinoistech.png to s3://${19}..."
-aws s3 cp ./Module-05/images/illinoistech.png s3://${19}/
+aws s3 cp ./Module-05/Files/illinoistech.png s3://${19}/
 echo "Uploaded image: ./images/illinoistech.png to s3://${19}..."
 
 echo "Uploading image: ./images/rohit.jpg to s3://${19}..."
-aws s3 cp ./Module-05/images/rohit.jpg s3://${19}/
+aws s3 cp ./Module-05/Files/rohit.jpg s3://${19}/
 echo "Uploaded image: ./images/rohit.jpg to s3://${19}..."
 
 echo "Listing content of bucket: s3://${19}..."
@@ -163,11 +173,11 @@ aws s3 ls s3://${19}/
 
 # Upload ranking.jpg and elevate.webp to bucket ${20}
 echo "Uploading image: ./images/elevate.webp to s3://${20}..."
-aws s3 cp ./module-05/images/elevate.webp s3://${20}/
+aws s3 cp ./module-05/Files/elevate.webp s3://${20}/
 echo "Uploaded image: ./images/elevate.webp to s3://${20}..."
 
 echo "Uploading image: ./images/ranking.jpg to s3://${20}..."
-aws s3 cp ./module-05/images/ranking.jpg s3://${20}/
+aws s3 cp ./module-05/Files/ranking.jpg s3://${20}/
 echo "Uploaded image: ./images/ranking.jpg to s3://${20}..."
 
 echo "Listing content of bucket: s3://${20}..."
@@ -175,7 +185,10 @@ aws s3 ls s3://${20}/
 
 # Retreive ELBv2 URL via aws elbv2 describe-load-balancers --query and print it to the screen
 #https://awscli.amazonaws.com/v2/documentation/api/latest/reference/elbv2/describe-load-balancers.html
-URL=$(aws elbv2 describe-load-balancers --load-balancer-arns $ELBARN --query 'LoadBalancers[0].DNSName' --output=text)
+URL=$(aws elbv2 describe-load-balancers \
+  --load-balancer-arns $ELBARN \
+  --query 'LoadBalancers[0].DNSName' \
+  --output=text)
 echo $URL
 
 # end of outer fi - based on arguments.txt content
