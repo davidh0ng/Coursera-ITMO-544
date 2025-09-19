@@ -79,8 +79,6 @@ TARGETARN=$(aws elbv2 create-target-group \
   --vpc-id $VPCID \
   --health-check-protocol HTTP \
   --health-check-port 80 \
-  --health-check-path /index.html \
-  --matcher HttpCode=200 \
   --target-type instance \
   --output=text \
   --query 'TargetGroups[0].TargetGroupArn')
