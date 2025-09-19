@@ -173,11 +173,11 @@ aws s3 ls s3://${19}/
 
 # Upload ranking.jpg and elevate.webp to bucket ${20}
 echo "Uploading image: ./images/elevate.webp to s3://${20}..."
-aws s3 cp ./module-05/Files/elevate.webp s3://${20}/
+aws s3 cp ./Module-05/Files/elevate.webp s3://${20}/
 echo "Uploaded image: ./images/elevate.webp to s3://${20}..."
 
 echo "Uploading image: ./images/ranking.jpg to s3://${20}..."
-aws s3 cp ./module-05/Files/ranking.jpg s3://${20}/
+aws s3 cp ./Module-05/Files/ranking.jpg s3://${20}/
 echo "Uploaded image: ./images/ranking.jpg to s3://${20}..."
 
 echo "Listing content of bucket: s3://${20}..."
