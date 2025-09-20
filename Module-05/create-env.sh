@@ -33,9 +33,6 @@
 
 ltconfigfile="./config.json"
 
-pwd
-ls ./Module-05/Files/
-
 if [ $# = 0 ]
 then
   echo "You don't have enough variables in your arugments.txt, perhaps you forgot to run: bash ./create-env.sh \$(< ~/arguments.txt)"
