@@ -96,8 +96,9 @@ checkTagTypeMismatch = False
 
 if tag in str(responseasg['AutoScalingGroups'][0]['Tags']):
   print("AutoScalingGroup: " + str(responseasg['AutoScalingGroups'][0]['AutoScalingGroupName'] + "..."))
-  for n in range(0,len(responseEC2['Reservations'][0]['Instances'])):
-      print("Containing InstanceID of: " + responseEC2['Reservations'][0]['Instances'][n]['InstanceId']) 
+  for reservation in responseEC2['Reservations']:
+    for instance in reservation['Instances']:
+        print("Containing InstanceID of: " + instance['InstanceId']) 
   
   print("Contains the tag: " + tag + "...")
 else:
@@ -119,12 +120,13 @@ print("\r")
 print('*' * 79)
 print("Testing to make sure the running EC2 instances are all of type t2.micro...")
 checkInstanceTypeMismatch = False
-for n in range(0,len(responseEC2['Reservations'][0]['Instances'])):
-  if responseEC2['Reservations'][0]['Instances'][n]['InstanceType'] == "t2.micro":
-    print("InstanceID of: " + responseEC2['Reservations'][0]['Instances'][n]['InstanceId'] + " and of InstanceType: " + responseEC2['Reservations'][0]['Instances'][n]['InstanceType'])
-  else:
-     checkInstanceTypeMatch = True
-     print("Incorrect Ec2 Instance Type of " + str(responseEC2['Reservations'][0]['Instances'][n]['InstanceType']) + " set.")
+for reservation in responseEC2['Reservations']:
+    for instance in reservation['Instances']:
+        if instance['InstanceType'] == "t2.micro":
+            print("InstanceID of: " + instance['InstanceId'] + " and of InstanceType: " + instance['InstanceType'])
+        else:
+            checkInstanceTypeMatch = True
+            print("Incorrect Ec2 Instance Type of " + str(instance['InstanceType']) + " set.")
 
 if checkInstanceTypeMismatch == False:
    print("Correct Ec2 Instance Type launched for all EC2 instances.")
@@ -310,17 +312,18 @@ try:
 except IndexError:  
   sys.exit("No EC2 instances in the RUNNING STATE - check that you ran your create-env.sh or wait 30-60 seconds more to make sure your instances are in the running state.")
 
-for n in range(0,len(responseEC2['Reservations'][0]['Instances'])):
-  print("Checking number of EBS attached to InstanceID of: " + responseEC2['Reservations'][0]['Instances'][n]['InstanceId'])
-  if len(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings']) == correctNumberOfEBS:
-    print("Correct number of EBS instances attached to InstanceID: " + str(responseEC2['Reservations'][0]['Instances'][n]['InstanceId']))
-    for j in range(0,len(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings'])):
-      print("EBS Device name: " + str(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings'][j]['DeviceName']))
-      print("Volume-ID of: " + str(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings'][j]['Ebs']['VolumeId']))
-      count+=1
-      print("One point...")
-  else:
-    print("Incorrect Number of Elastic Block Stores created per instance, expecting " + str(correctNumberOfEBS) + ", received " + str(len(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings'])) + " instances...")
+for reservation in responseEC2['Reservations']:
+    for instance in reservation['Instances']:
+        print("InstanceID of: " + instance['InstanceId'])
+        if len(instance['BlockDeviceMappings']) == correctNumberOfEBS:
+            print("Correct number of EBS instances attached to InstanceID: " + str(instance['InstanceId']))
+            for bd in instance['BlockDeviceMappings']:
+                print("EBS Device name: " + str(bd['DeviceName']))
+                print("Volume-ID of: " + str(bd['Ebs']['VolumeId']))
+                count += 1
+                print("One point...")
+        else:
+            print("Incorrect Number of Elastic Block Stores created per instance, expecting " + str(correctNumberOfEBS) + ", received " + str(len(instance['BlockDeviceMappings'])) + " instances...")
 
 if count == 9:
   grandtotal+=1
