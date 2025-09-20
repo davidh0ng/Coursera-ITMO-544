@@ -29,20 +29,20 @@ tag = "module5-tag"
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling.html
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html
 
-clientec2 = boto3.client('ec2', region_name='us-west-1')
+clientec2 = boto3.client('ec2')
 clientelbv2 = boto3.client('elbv2')
 clientasg = boto3.client('autoscaling')
 clients3 = boto3.client('s3')
 
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_instances.html
-instances = []
-responseEC2 = clientec2.get_paginator('describe_instances')
-for page in responseEC2.paginate(Filters=[{'Name': 'instance-state-name', 'Values': ['running']}]):
-    for reservation in page['Reservations']:
-        for instance in reservation['Instances']:
-            instances.append(instance['InstanceId'])
-print(instances)
-# End of function
+responseEC2 = clientec2.describe_instances(
+ Filters=[
+     {
+         'Name': 'instance-state-name',
+         'Values':['running']
+     }
+],
+) # End of function
 
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/list_buckets.html
 # Get a Dict of all bucket names
