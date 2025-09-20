@@ -173,7 +173,7 @@ if [ -n "$MYS3BUCKETS" ]
     echo "Looping through array of buckets to create array of objects..."
     for j in "${MYS3BUCKETS_ARRAY[@]}"
     do
-    MYKEYS=$(aws s3api list-objects-v2 )
+    MYKEYS=$(aws s3api list-objects-v2 --bucket $j --query 'Contents[].Key' --output text)
     MYKEYS_ARRAY=($MYKEYS)
     echo "End of looping through array of buckets..."
 
