@@ -62,9 +62,9 @@ echo $SUBNET2B
 echo "Creating the AutoScalingGroup Launch Template..."
 aws ec2 create-launch-template \
   --launch-template-name ${12} \
-  --version-description AutoScalingVersion1 \
   --launch-template-data file://config.json \
-  --region ${17}
+  --region ${17} \
+  --tag-specifications "ResourceType=launch-template,Tags=[{Key=Module,Value=${7}}]"
 echo "Launch Template created..."
 
 # Launch Template Id
@@ -124,7 +124,7 @@ aws autoscaling create-auto-scaling-group \
   --desired-capacity ${16} \
   --target-group-arns $TARGETARN \
   --vpc-zone-identifier "$SUBNET2A,$SUBNET2B" \
-  --tags Key=Tag,Value=${7}
+  --tags Key=Module,Value=${7}
 
 echo 'Waiting for Auto Scaling Group to spin up EC2 instances and attach them to the TargetARN...'
 # Create waiter for registering targets
