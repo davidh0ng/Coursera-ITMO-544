@@ -325,7 +325,7 @@ for reservation in responseEC2['Reservations']:
         else:
             print("Incorrect Number of Elastic Block Stores created per instance, expecting " + str(correctNumberOfEBS) + ", received " + str(len(instance['BlockDeviceMappings'])) + " instances...")
 
-if count == 9:
+if count == 3:
   grandtotal+=1
 
 print('*' * 79)
