@@ -54,7 +54,7 @@ else
     echo "Creating RDS instance..."
     echo "******************************************************************************"
     aws rds create-db-instance \
-        --db-instance-identifier $SECRET_ID\
+        --db-instance-identifier ${22}\
         --db-instance-class db.t3.micro \
         --engine mysql \
         --master-username $USERVALUE \
@@ -68,7 +68,7 @@ else
     echo "Waiting for RDS instance: to be created..."
     echo "This might take around 5-15 minutes..."
     echo "******************************************************************************"
-    aws rds wait db-instance-available --db-instance-identifier $SECRET_ID
+    aws rds wait db-instance-available --db-instance-identifier ${22}
     echo "******************************************************************************"
     echo "RDS instance created and in the available state..."
     echo "******************************************************************************"
@@ -78,8 +78,8 @@ else
     echo "******************************************************************************"
     # Append "-read-replica" to the ${22} to create the read-replica name
     aws rds create-db-instance-read-replica \
-        --db-instance-identifier $SECRET_ID-read-replica \
-        --source-db-instance-identifier $SECRET_ID --tags="Key=assessment,Value=${7}"
+        --db-instance-identifier ${22}-read-replica \
+        --source-db-instance-identifier ${22} --tags="Key=assessment,Value=${7}"
 
     # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/rds/wait/db-instance-available.html
     echo "******************************************************************************"
@@ -87,16 +87,16 @@ else
     echo "This might take another 5-15 minutes..."
     echo "Perhaps check out https://xkcd.com/303/ ..."
     echo "******************************************************************************"
-    aws rds wait db-instance-available --db-instance-identifier $SECRET_ID-read-replica
+    aws rds wait db-instance-available --db-instance-identifier ${22}-read-replica
 
     # Fetching RDS address
     # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/rds/describe-db-instances.html
     echo "******************************************************************************"
     echo "Retrieving the RDS Endpoint Address and printing to the screen..."
-    RDS_Address=$(aws rds describe-db-instances --db-instance-identifier $SECRET_ID --query "")
+    RDS_Address=$(aws rds describe-db-instances --db-instance-identifier ${22} --query "DBInstances[*].Endpoint.Address" --output text)
     echo $RDS_Address
     echo "Retrieving the RDS Read Replica Endpoint Address and printing to the screen..."
-    RDS_RR_Address=$(aws rds describe-db-instances --db-instance-identifier $SECRET_ID-read-replica  --query "")
+    RDS_RR_Address=$(aws rds describe-db-instances --db-instance-identifier ${22}-read-replica --query "DBInstances[*].Endpoint.Address" --output text)
     echo $RDS_RR_Address
 # End of main if
 fi
