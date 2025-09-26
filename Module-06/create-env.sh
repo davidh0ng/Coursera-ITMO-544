@@ -29,7 +29,7 @@
 # 21 Secret Name
 # 22 Database Name
 
-SECRET_ID=$(aws secretsmanager list-secrets --filters Key=name,Values=${21} --query 'SecretList[*].ARN')
+SECRET_ID=$(aws secretsmanager list-secrets --filters Key=name,Values=${21} --query 'SecretList[*].ARN' --output text)
 echo $SECRET_ID
 
 if [ $# = 0 ]
@@ -49,8 +49,8 @@ else
         --secret-id $SECRET_ID \
         --output=json | jq '.SecretString' | sed 's/[\\n]//g' | sed 's/^"//g' | sed 's/"$//g' | jq '.pass' | sed 's/"//g')
 
-echo "USERVALUE: $USERVALUE"
-echo "PASSVALUE: $PASSVALUE"
+echo "USERVALUE: >$USERVALUE<"
+echo "PASSVALUE: >$PASSVALUE<"
 
     # Create RDS instances
     # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/rds/index.html
