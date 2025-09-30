@@ -82,14 +82,14 @@ resource "aws_lb" "lb" {
   name               = var.elb-name
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.sg.id]
+  security_groups    = [var.vpc_security_group_ids]
 
   subnets = [data.aws_subnets.subneta.ids[0], data.aws_subnets.subnetb.ids[0]]
   
   enable_deletion_protection = false
 
   tags = {
-    Environment = "production"
+    Environment = var.module-tag
   }
 }
 
