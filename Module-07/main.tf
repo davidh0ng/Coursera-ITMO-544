@@ -34,15 +34,15 @@ data "aws_availability_zones" "available" {
 ##############################################################################
 data "aws_availability_zones" "primary" {
   filter {
-    name   = "zone-name"
-    values = ["us-east-2a"]
+    name   = var.az[0]
+    values = ["us-west-1a"]
   }
 }
 
 data "aws_availability_zones" "secondary" {
   filter {
-    name   = "zone-name"
-    values = ["us-east-2b"]
+    name   = var.az[2]
+    values = ["us-west-1c"]
   }
 }
 
@@ -52,26 +52,26 @@ data "aws_availability_zones" "secondary" {
 # The data value is essentially a query and or a filter to retrieve values
 data "aws_subnets" "subneta" {
   filter {
-    name   = "availabilityZone"
-    values = ["us-east-2a"]
+    name   = var.az[0]
+    values = ["us-west-1a"]
   }
 }
 
 data "aws_subnets" "subnetb" {
   filter {
-    name   = "availabilityZone"
-    values = ["us-east-2b"]
+    name   = var.az[1]
+    values = ["us-west-1b"]
   }
 }
 
 data "aws_subnets" "subnetc" {
   filter {
-    name   = "availabilityZone"
-    values = ["us-east-2c"]
+    name   = var.az[2]
+    values = ["us-west-1c"]
   }
 }
 
-output "subnetid-2a" {
+output "subnetid-1a" {
   value = [data.aws_subnets.subneta.ids]
 }
 
@@ -106,11 +106,11 @@ resource "aws_lb_target_group" "alb-lb-tg" {
   # depends_on is effectively a waiter -- it forces this resource to wait until the listed
   # resource is ready
   depends_on  = [aws_lb.lb]
-  name        = 
-  target_type = 
+  name        = var.tg-name
+  target_type = instance
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = 
+  vpc_id      = aws_vpc.main.id
 }
 
 ##############################################################################
@@ -134,10 +134,10 @@ resource "aws_lb_listener" "front_end" {
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template
 ##############################################################################
 resource "aws_launch_template" "mp1-lt" {
-  image_id                             = 
+  image_id                             = var.imageid
   instance_initiated_shutdown_behavior = "terminate"
-  instance_type                        = 
-  key_name                             = 
+  instance_type                        = var.instance-type
+  key_name                             = var.key-name
 
   monitoring {
     enabled = false
@@ -147,18 +147,18 @@ resource "aws_launch_template" "mp1-lt" {
   }
   
   block_device_mappings {
-    device_name = 
+    device_name = var.device-name[0]
 
     ebs {
-      volume_size = 
+      volume_size = var.volume-size[0]
     }
   }
 
   block_device_mappings {
-    device_name = 
+    device_name = var.device-name[1]
 
     ebs {
-      volume_size = 
+      volume_size = var.volume-size[0]
     }
   }
 
@@ -170,7 +170,7 @@ resource "aws_launch_template" "mp1-lt" {
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = 
+      Name = var.module-tag
     }
   }
   user_data = filebase64("./install-env.sh")
@@ -182,19 +182,19 @@ resource "aws_launch_template" "mp1-lt" {
 ##############################################################################
 
 resource "aws_autoscaling_group" "bar" {
-  name                      = 
+  name                      = var.asg-name
   depends_on                = [aws_launch_template.mp1-lt]
-  desired_capacity          = 
-  max_size                  = 
-  min_size                  = 
+  desired_capacity          = var.desired
+  max_size                  = var.max
+  min_size                  = var.min
   health_check_grace_period = 300
-  health_check_type         = 
+  health_check_type         = var.health-check-type
   target_group_arns         = [aws_lb_target_group.alb-lb-tg.arn]
   vpc_zone_identifier       = [data.aws_subnets.subneta.ids[0], data.aws_subnets.subnetb.ids[0]]
 
   tag {
     key                 = "assessment"
-    value               = 
+    value               = var.module-tag
     propagate_at_launch = true
   }
 
@@ -212,8 +212,8 @@ resource "aws_autoscaling_group" "bar" {
 resource "aws_autoscaling_attachment" "example" {
   # Wait for lb to be running before attaching to asg
   depends_on  = [aws_lb.lb]
-  autoscaling_group_name = 
-  lb_target_group_arn    = 
+  autoscaling_group_name = var.asg-name
+  lb_target_group_arn    = var.tg-name
 }
 
 output "alb-lb-tg-arn" {

@@ -11,18 +11,22 @@
 
 # Default types are stings, lists, and maps
 
+variable "vpc_id" {}
 variable "imageid" {}
 variable "instance-type" {}
 variable "key-name" {}
 variable "vpc_security_group_ids" {}
 variable "cnt" {}
 variable "install-env-file" {}
-variable "az" { default = ["us-east-2a", "us-east2b", "us-east-2c"] }
+variable "az" { default = ["us-west-1a", "us-west-1b", "us-west-1c"] }
 variable "elb-name" {}
 variable "tg-name" {}
 variable "asg-name" {}
+variable "health-check-type" { default = "EC2" }
 variable "lt-name" {}
 variable "min" { default = 2 }
 variable "max" { default = 5 }
 variable "desired" { default = 3 }
 variable "module-tag" {}
+variable "device-name" { default = ["/dev/xvda1", "/dev/xvda2"] }
+variable "volume-size" { default = [20] }
