@@ -34,21 +34,21 @@ data "aws_availability_zones" "available" {
 ##############################################################################
 data "aws_availability_zones" "primary" {
   filter {
-    name   = "availability-zone"
+    name   = "zone-name"
     values = [var.az[0]]
   }
 }
 
 data "aws_availability_zones" "secondary" {
   filter {
-    name   = "availability-zone"
+    name   = "zone-name"
     values = [var.az[1]]
   }
 }
 
 data "aws_availability_zones" "tertiary" {
   filter {
-    name   = "availability-zone"
+    name   = "zone-name"
     values = [var.az[2]]
   }
 }
@@ -59,22 +59,22 @@ data "aws_availability_zones" "tertiary" {
 # The data value is essentially a query and or a filter to retrieve values
 data "aws_subnets" "subneta" {
   filter {
-    name   = var.az[0]
-    values = ["us-west-1a"]
+    name   = "availabilityZone"
+    values = [var.az[0]]
   }
 }
 
 data "aws_subnets" "subnetb" {
   filter {
-    name   = var.az[1]
-    values = ["us-west-1b"]
+    name   = "availabilityZone"
+    values = [var.az[1]]
   }
 }
 
 data "aws_subnets" "subnetc" {
   filter {
-    name   = var.az[2]
-    values = ["us-west-1c"]
+    name   = "availabilityZone"
+    values = [var.az[2]]
   }
 }
 
