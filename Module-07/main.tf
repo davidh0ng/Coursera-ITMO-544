@@ -79,10 +79,10 @@ output "subnetid-2a" {
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
 ##############################################################################
 resource "aws_lb" "lb" {
-  name               = 
+  name               = var.elb-name
   internal           = false
   load_balancer_type = "application"
-  security_groups    = 
+  security_groups    = [aws_security_group.sg.id]
 
   subnets = [data.aws_subnets.subneta.ids[0], data.aws_subnets.subnetb.ids[0]]
   
