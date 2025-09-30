@@ -21,6 +21,12 @@ output "vpcs" {
 ##############################################################################
 data "aws_availability_zones" "available" {
   state = "available"
+  /*
+  filter {
+    name   = "zone-type"
+    values = ["availability-zone"]
+  }
+*/
 }
 
 ##############################################################################
@@ -28,15 +34,22 @@ data "aws_availability_zones" "available" {
 ##############################################################################
 data "aws_availability_zones" "primary" {
   filter {
-    name   = var.az[0]
-    values = ["us-west-1a"]
+    name   = "availability-zone"
+    values = [var.az[0]]
   }
 }
 
 data "aws_availability_zones" "secondary" {
   filter {
-    name   = var.az[2]
-    values = ["us-west-1c"]
+    name   = "availability-zone"
+    values = [var.az[1]]
+  }
+}
+
+data "aws_availability_zones" "tertiary" {
+  filter {
+    name   = "availability-zone"
+    values = [var.az[2]]
   }
 }
 
