@@ -14,6 +14,6 @@ lt-name                = "djh-lt"
 min                   = 2
 max                   = 5
 desired               = 3
-device-name           = ["/dev/xvda1", "/dev/xvda2"]
+device-name           = ["/dev/sda1", "/dev/sda2"]
 volume-size           = [20]
 module-tag             = "module7-tag"

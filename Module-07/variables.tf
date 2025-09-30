@@ -28,5 +28,5 @@ variable "min" { default = 2 }
 variable "max" { default = 5 }
 variable "desired" { default = 3 }
 variable "module-tag" {}
-variable "device-name" { default = ["/dev/xvda1", "/dev/xvda2"] }
+variable "device-name" { default = ["/dev/sda1", "/dev/sda2"] }
 variable "volume-size" { default = [20] }
