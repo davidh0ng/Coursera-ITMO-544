@@ -91,7 +91,7 @@ resource "aws_lb" "lb" {
   load_balancer_type = "application"
   security_groups    = [var.vpc_security_group_ids]
 
-  subnets = [data.aws_subnets.subneta.ids[0], data.aws_subnets.subnetb.ids[0]]
+  subnets = [data.aws_subnets.subneta.ids[0], data.aws_subnets.subnetc.ids[0]]
   
   enable_deletion_protection = false
 
