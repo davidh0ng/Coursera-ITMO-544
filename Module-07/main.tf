@@ -197,7 +197,7 @@ resource "aws_autoscaling_group" "bar" {
   health_check_grace_period = 300
   health_check_type         = var.health-check-type
   target_group_arns         = [aws_lb_target_group.alb-lb-tg.arn]
-  vpc_zone_identifier       = [data.aws_subnets.subneta.ids[0], data.aws_subnets.subnetb.ids[0]]
+  vpc_zone_identifier       = [data.aws_subnets.subneta.ids[0], data.aws_subnets.subnetc.ids[0]]
 
   tag {
     key                 = "assessment"
