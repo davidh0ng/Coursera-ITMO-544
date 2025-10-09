@@ -14,3 +14,6 @@ raw-s3                 = "djh-raw-s3"
 finished-s3            = "djh-finished-s3"
 dynamodb-table-name    = "djh-dynamodb"
 ebs-size               = "15"
+max-capacity           = 5
+min-capacity           = 1
+desired-capacity       = 3

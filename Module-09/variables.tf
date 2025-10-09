@@ -30,3 +30,6 @@ variable "finished-s3" {}
 variable "dynamodb-table-name" {}
 variable "module-tag" {}
 variable "ebs-size" {}
+variable "max-capacity" {}
+variable "min-capacity" {}
+variable "desired-capacity" {}
