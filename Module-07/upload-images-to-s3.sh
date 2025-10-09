@@ -13,11 +13,11 @@ then
   exit 1 
 else
     echo "Uploading image: ./images/illinoistech.png to s3://${19}..."
-    aws s3 cp ./Files/illinoistech.png s3://${19}
+    aws s3 cp ./Files/illinoistech.png s3://${19}/
     echo "Uploaded image: ./images/illinoistech.png to s3://${19}..."
 
     echo "Uploading image: ./images/rohit.jpg to s3://${19}..."
-    aws s3 cp ./Files/rohit.jpg s3://${19}
+    aws s3 cp ./Files/rohit.jpg s3://${19}/
     echo "Uploaded image: ./images/rohit.jpg to s3://${19}..."
 
     echo "Listing content of bucket: s3://${19}..."
@@ -25,11 +25,11 @@ else
 
     # Upload ranking.jpg and elevate.webp to bucket ${20}
     echo "Uploading image: ./images/elevate.webp to s3://${20}..."
-    aws s3 cp ./Files/elevate.webp s3://${20}
+    aws s3 cp ./Files/elevate.webp s3://${20}/
     echo "Uploaded image: ./images/elevate.webp to s3://${20}..."
 
     echo "Uploading image: ./images/ranking.jpg to s3://${20}..."
-    aws s3 cp ./Files/ranking.jpg s3://${20}
+    aws s3 cp ./Files/ranking.jpg s3://${20}/
     echo "Uploaded image: ./images/ranking.jpg to s3://${20}..."
 
     echo "Listing content of bucket: s3://${20}..."
